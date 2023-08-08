@@ -1,22 +1,24 @@
 import express from 'express';
 import { DwnHelper } from './src/utils/dwn.js';
 import { initAgent } from './src/utils/agent.js';
-import {
-    AriesRFCsPlugin,
-    MESSAGE_TYPES_0453,
-    DIDCommMessagePacking
-  } from '@spherity/aries-rfcs-veramo-plugin';
+import cors from 'cors'
+// import {
+//     AriesRFCsPlugin,
+//     MESSAGE_TYPES_0453,
+//     DIDCommMessagePacking
+//   } from '@spherity/aries-rfcs-veramo-plugin';
 
 const app = express();
 const port = 3001;
 app.use(express.json());
+app.use(cors())
 
 const dwn = new DwnHelper(process.env.DWN_URL)
 let agent
 let keys
 let identifier
 
-const ariesPlugin = new AriesRFCsPlugin;
+// const ariesPlugin = new AriesRFCsPlugin;
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -30,7 +32,7 @@ app.get('/setup', async (req,res) => {
     keys = response.decodedKeys
     agent = response.agent
     // console.log(agent)
-    // await dwn.init()
+    await dwn.init()
     res.send(agent)
 });
 
