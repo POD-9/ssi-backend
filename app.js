@@ -17,7 +17,7 @@ const client = new CosmosClient({ endpoint, key });
 //   } from '@spherity/aries-rfcs-veramo-plugin';
 
 const app = express();
-const port = 3001;
+const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); // Body parse middleware
 app.use(cors())
@@ -34,20 +34,49 @@ app.get('/', (req, res) => {
 });
 
 // Register
-app.get('/setup', async (req, res) => {
+app.post('/setup', async (req, res) => {
   // this is where we need to merge the sign up code. the keys variable holds the data that we need to use to sign/encrypt messages
-  let response = await initAgent('test')
-  identifier = response.identifier
-  keys = response.decodedKeys
-  agent = response.agent
+  let response = await initAgent('test');
+  identifier = response.identifier;
+  keys = response.decodedKeys;
+  agent = response.agent;
 
   // Connect to container
   const { database } = await client.databases.createIfNotExists({ id: "itemsDB" });
   const { container } = await database.containers.createIfNotExists({ id: "wallet-users" });
 
+  // Get the data from the request and build up the new user
+  let firstName = req.body.firstName; 
+  let lastName = req.body.lastName; 
+  let username = req.body.username; 
+  let password = req.body.password; // Plaintext for the POC
+
+
+  if (!firstName || !lastName || !username || !password) {
+    res.status(400);
+    res.json( { status: "Failure", description: "Missing form data" } );
+    return;
+  }
+  // const { resource } = await container.item(username, username).read()
+
+  // Check that username doesn't already exist.
+
+  let newUser = {
+    username: username,
+    firstName: firstName,
+    lastName: lastName,
+    password: password,
+    identifier: identifier,
+    keys: keys,
+    agent: agent
+  }
+
+  // Add to container
+  await container.items.create(newUser)
+
   // console.log(agent)
-  await dwn.init()
-  res.send(agent)
+  await dwn.init();
+  res.json(newUser); // respond with the new user
 });
 
 app.post('/dwn/init', async (req, res) => {
