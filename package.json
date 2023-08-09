@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/cosmos": "^3.17.3",
     "@decentralized-identity/ion-sdk": "^1.0.1",
     "@decentralized-identity/ion-tools": "^1.1.4",
     "@spherity/aries-rfcs-veramo-plugin": "^1.0.0",
@@ -33,6 +34,7 @@
     "uuid4": "^2.0.3"
   },
   "devDependencies": {
+    "dotenv": "^16.3.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
