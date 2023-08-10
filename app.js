@@ -42,7 +42,6 @@ app.post('/setup', async (req, res) => {
   identifier = response.identifier;
   keys = response.decodedKeys;
   agent = response.agent;
-  console.log("here1")
 
   // Connect to container
   let { database } = await client.databases.createIfNotExists({ id: "itemsDB" });

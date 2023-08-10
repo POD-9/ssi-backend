@@ -81,7 +81,7 @@ export const initAgent = async (name) => {
         logging: ["error", "info", "warn"],
         entities: Entities,
     }).initialize();
-
+    console.log("here1")
     // const didcommReceiver = {
     //     eventTypes: ['DIDCommV2Message-received'],
     //     onEvent: async (event, context) => {
@@ -95,6 +95,7 @@ export const initAgent = async (name) => {
             mem: new KeyManagementSystem(new MemoryPrivateKeyStore()),
         },
     });
+    console.log('here2')
 
     const agent = createAgent({
         plugins: [
@@ -137,6 +138,7 @@ export const initAgent = async (name) => {
         };
     };
 
+    console.log('here3')
     const createIdentifierOpts = async () => ({
         anchor: !keys,
         recoveryKey: getKey(keys, "recovery"),
@@ -169,6 +171,7 @@ export const initAgent = async (name) => {
         ],
     });
 
+    console.log('here4')
     const identifier = await agent.didManagerCreate({
         options: await createIdentifierOpts(),
     });
