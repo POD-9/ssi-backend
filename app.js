@@ -49,14 +49,14 @@ app.post('/setup', async (req, res) => {
 
   //console.log("here2")
   // Get the data from the request and build up the new user
-  let firstName = req.body.firstName; 
-  let lastName = req.body.lastName; 
-  let username = req.body.username.toLowerCase(); 
-  let password = req.body.password; // Plaintext for the POC
+  let firstName = req.body.firstName.trim(); 
+  let lastName = req.body.lastName.trim(); 
+  let username = req.body.username.toLowerCase().trim(); 
+  let password = req.body.password.trim(); // Plaintext for the POC
 
 
   if (!firstName || !lastName || !username || !password) {
-    return res.json( { status: "Failed", description: "Missing form data" } );
+    return res.send( { status: "Failed", description: "Missing form data" } );
   }
   //console.log("here3")
 
@@ -70,7 +70,7 @@ app.post('/setup', async (req, res) => {
     
   if (resources.length !== 0) {
     //console.log("here5")
-    return res.json( {status: "Failed", description: "Username already in use."});
+    return res.send( {status: "Failed", description: "Username already in use."});
   }
 
   let newUser = {
@@ -88,7 +88,7 @@ app.post('/setup', async (req, res) => {
 
   // console.log(agent)
   await dwn.init();
-  return res.json(newUser); // respond with the new user
+  return res.send(newUser); // respond with the new user
 });
 
 app.post('/dwn/init', async (req, res) => {
@@ -115,22 +115,27 @@ app.post('/dwn/write', async (req, res) => {
 })
 
 app.post('/perms/request', (req, res) => {
+  res.send('Permissions requested');
 
 })
 
 app.post('/perms/grant', (req, res) => {
+  res.send('Grant Permissions');
 
 })
 
 app.post('/perms/read', (req, res) => {
+  res.send('Read Permissions');
 
 })
 
 app.post('/perms/read/reject', (req, res) => {
+  res.send('Permissions reject');
 
 })
 
 app.post('/perms/read/grant', (req, res) => {
+  res.send('Grant Read Permissions');
 
 })
 
@@ -140,6 +145,7 @@ app.post('/perms/read/grant', (req, res) => {
 
 app.get('/vcs', (req, res) => {
   // read credential in the database
+  res.send('Read credentials');
 })
 
 app.post('/vcs/issue', async (req, res) => {
@@ -163,15 +169,15 @@ app.post('/vcs/issue', async (req, res) => {
 })
 
 app.post('/vcs/request', (req, res) => {
-
+  res.send('Requested VCs')
 })
 
 app.post('/vcs/present', (req, res) => {
-
+  res.send('present VCs')
 })
 
 app.post('/vcs/verify', (req, res) => {
-
+  res.send('Verify VC')
 })
 
 app.listen(port, () => {

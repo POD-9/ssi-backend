@@ -126,6 +126,8 @@ export const initAgent = async (name) => {
         ],
     });
 
+    console.log('here3')
+
     const keys = readKeysFromFile(name);
     const getKey = (keys, kid) => {
         const key = keys ? keys.filter((k) => k.kid === kid)[0] : undefined;
@@ -138,7 +140,6 @@ export const initAgent = async (name) => {
         };
     };
 
-    console.log('here3')
     const createIdentifierOpts = async () => ({
         anchor: !keys,
         recoveryKey: getKey(keys, "recovery"),
