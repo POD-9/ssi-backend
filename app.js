@@ -35,31 +35,44 @@ app.get('/', (req, res) => {
 
 // Register
 app.post('/setup', async (req, res) => {
-  // this is where we need to merge the sign up code. the keys variable holds the data that we need to use to sign/encrypt messages
+  // This is where we need to merge the sign up code. 
+  // The keys variable holds the data that we need to use to sign/encrypt messages
+
   let response = await initAgent('test');
   identifier = response.identifier;
   keys = response.decodedKeys;
   agent = response.agent;
+  console.log("here1")
 
   // Connect to container
-  const { database } = await client.databases.createIfNotExists({ id: "itemsDB" });
-  const { container } = await database.containers.createIfNotExists({ id: "wallet-users" });
+  let { database } = await client.databases.createIfNotExists({ id: "itemsDB" });
+  let { container } = await database.containers.createIfNotExists({ id: "wallet-users" });
 
+  //console.log("here2")
   // Get the data from the request and build up the new user
   let firstName = req.body.firstName; 
   let lastName = req.body.lastName; 
-  let username = req.body.username; 
+  let username = req.body.username.toLowerCase(); 
   let password = req.body.password; // Plaintext for the POC
 
 
   if (!firstName || !lastName || !username || !password) {
-    res.status(400);
-    res.json( { status: "Failure", description: "Missing form data" } );
-    return;
+    return res.json( { status: "Failed", description: "Missing form data" } );
   }
-  // const { resource } = await container.item(username, username).read()
+  //console.log("here3")
 
   // Check that username doesn't already exist.
+  let { resources } = await container.items
+  .query({
+    query: "SELECT * from container WHERE container.username = @username",
+    parameters: [{ name: "@username", value: username }]
+  }).fetchAll();
+  // console.log("here4")
+    
+  if (resources.length !== 0) {
+    //console.log("here5")
+    return res.json( {status: "Failed", description: "Username already in use."});
+  }
 
   let newUser = {
     username: username,
@@ -76,7 +89,7 @@ app.post('/setup', async (req, res) => {
 
   // console.log(agent)
   await dwn.init();
-  res.json(newUser); // respond with the new user
+  return res.json(newUser); // respond with the new user
 });
 
 app.post('/dwn/init', async (req, res) => {

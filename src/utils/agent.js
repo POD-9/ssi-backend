@@ -186,7 +186,7 @@ export const initAgent = async (name) => {
     }
 
     // This is for debug purposes
-    console.log("FIND ME")
+    // console.log("FIND ME")
     displayKeys(name);
 
     let key
