@@ -10,11 +10,6 @@ const endpoint = process.env.COSMOS_ENDPOINT;
 const key = process.env.COSMOS_KEY;
 const client = new CosmosClient({ endpoint, key });
 
-// import {
-//     AriesRFCsPlugin,
-//     MESSAGE_TYPES_0453,
-//     DIDCommMessagePacking
-//   } from '@spherity/aries-rfcs-veramo-plugin';
 
 const app = express();
 const port = 3000;

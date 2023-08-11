@@ -11,15 +11,6 @@ import {
     KeyManager,
     MemoryPrivateKeyStore,
 } from "@veramo/key-manager";
-const veramo_plugin = import('@spherity/aries-rfcs-veramo-plugin')
-// const PresentProof0454MessageHandlerPromise = import ('@spherity/aries-rfcs-veramo-plugin');
-// const IssueCredential0453MessageHandlerPromise = import ('@spherity/aries-rfcs-veramo-plugin');
-import {
-     createCredential,
-     createPresentation,
-     receiveCredential,
-     verifyPresentation,
-} from './callbacks.js'
 import { KeyManagementSystem } from "@veramo/kms-local";
 import { IonDIDProvider, getDidIonResolver } from "@veramo/did-provider-ion";
 import {
@@ -34,41 +25,7 @@ import dotenv from "dotenv";
 import fetch from 'node-fetch';
 dotenv.config();
 
-//20.4.240.150
-
-export class TrustResolver {
-    async checkTrustStatus(did) {
-      return true
-    }
-}
-
-let handle0023
-let handle0453
-let handle0454
-
-veramo_plugin.then(res => {
-    return res.DidExchange0023MessageHandler
-}).then(res => {
-    return res()
-}).then(res => {
-    handle0023 = new res(new TrustResolver())
-})
-
-veramo_plugin.then(res => {
-    return res.IssueCredential0453MessageHandler
-}).then(res => {
-    return res()
-}).then(res => {
-    handle0453 = new res(createCredential, receiveCredential)
-})
-
-veramo_plugin.then(res => {
-    return res.PresentProof0454MessageHandler
-}).then(res => {
-    return res()
-}).then(res => {
-    handle0454 = new res(createPresentation,verifyPresentation)
-})
+//20.4.240.15
 
 
 export const initAgent = async (name) => {
@@ -81,13 +38,6 @@ export const initAgent = async (name) => {
         logging: ["error", "info", "warn"],
         entities: Entities,
     }).initialize();
-    console.log("here1")
-    // const didcommReceiver = {
-    //     eventTypes: ['DIDCommV2Message-received'],
-    //     onEvent: async (event, context) => {
-    //       fn(event, context)
-    //     }
-    //   }
 
     const keyManager = new KeyManager({
         store: new MemoryKeyStore(),
@@ -95,11 +45,11 @@ export const initAgent = async (name) => {
             mem: new KeyManagementSystem(new MemoryPrivateKeyStore()),
         },
     });
-    console.log('here2')
+
 
     const agent = createAgent({
         plugins: [
-            // didcommReceiver,
+
             keyManager,
             new DIDManager({
                 providers: {
@@ -113,20 +63,10 @@ export const initAgent = async (name) => {
             new DIDResolverPlugin({
                 resolver: new Resolver(getDidIonResolver()),
             }),
-            new MessageHandler({
-                messageHandlers: [
-                    new DIDCommMessageHandler(),
-                    handle0023,
-                    handle0453,
-                    handle0454
-                    
-                ],
-            }),
             new DataStore(dbConnection),
         ],
     });
 
-    console.log('here3')
 
     const keys = readKeysFromFile(name);
     const getKey = (keys, kid) => {
