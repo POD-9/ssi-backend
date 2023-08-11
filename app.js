@@ -81,8 +81,10 @@ app.post('/setup', async (req, res) => {
   return res.send(newUser); // respond with the new user
 });
 
+// Initialise a group of schemas (protocol)
 app.post('/dwn/init', async (req, res) => {
   const { protocol, definition } = req.body
+
   const message = await dwn.createProtocol(protocol, definition, keys, identifier)
   const result = await dwn.send(message);
   res.send(result)
