@@ -42,7 +42,6 @@ app.post('/setup', async (req, res) => {
   let { database } = await client.databases.createIfNotExists({ id: "itemsDB" });
   let { container } = await database.containers.createIfNotExists({ id: "wallet-users" });
 
-  //console.log("here2")
   // Get the data from the request and build up the new user
   let firstName = req.body.firstName.trim(); 
   let lastName = req.body.lastName.trim(); 
@@ -53,7 +52,6 @@ app.post('/setup', async (req, res) => {
   if (!firstName || !lastName || !username || !password) {
     return res.send( { status: "Failed", description: "Missing form data" } );
   }
-  //console.log("here3")
 
   // Check that username doesn't already exist.
   let { resources } = await container.items
@@ -61,10 +59,8 @@ app.post('/setup', async (req, res) => {
     query: "SELECT * from container WHERE container.username = @username",
     parameters: [{ name: "@username", value: username }]
   }).fetchAll();
-  // console.log("here4")
     
   if (resources.length !== 0) {
-    //console.log("here5")
     return res.send( {status: "Failed", description: "Username already in use."});
   }
 
@@ -81,7 +77,6 @@ app.post('/setup', async (req, res) => {
   // Add to container
   await container.items.create(newUser)
 
-  // console.log(agent)
   await dwn.init();
   return res.send(newUser); // respond with the new user
 });
