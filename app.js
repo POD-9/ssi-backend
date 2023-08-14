@@ -112,8 +112,14 @@ app.post('/dwn/write', async (req, res) => {
 app.post('/perms/request', async (req, res) => {
    const { method, schema, targetDID } = req.body;
 
+   let dwnMethod;
+   if (method == "write") {
+      dwnMethod = RecordsWrite
+   } else if (method == "read") {
+      dwnMethod = RecordsQuery
+   } else {
 
-   let dwnMethod = method === "write" ? "RecordsWrite" : "RecordsQuery"
+   }
 
    const msg = await dwn.createPermissionsRequest(dwnMethod, schema, keys, targetDID);
    const response = await dwn.send(msg)
