@@ -151,13 +151,12 @@ export class DwnHelper {
 
     /**
    * Creates a RecordsQuery message (TODO, add more filtering options)
-   * @param {string} protocolName 
-   * @param {string} protocolSchema 
    * @param {object} structuredDidKey 
    * @param {DID} targetDid 
+   * @param {string} status 
    * @returns {Promise<RecordsQuery>}
    */
-     async createPermissionsRead(structuredDidKey, targetDid, filter={}) {
+     async createPermissionsRead(structuredDidKey, targetDid, status= 'all', filter={}) {
       const signatureMaterial = this.createSignatureInput(structuredDidKey)
       const query = {
         filter: {
@@ -169,6 +168,7 @@ export class DwnHelper {
       const queryOptions = {
         ...query,
         target: targetDid,
+        status, //status can be 'all', 'rejected', 'granted', 'open' (haven't been processed yet)
         signatureInput: signatureMaterial
       };
   
