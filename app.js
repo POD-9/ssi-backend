@@ -59,7 +59,7 @@ app.post('/setup', async (req, res) => {
     query: "SELECT * from container WHERE container.username = @username",
     parameters: [{ name: "@username", value: username }]
   }).fetchAll();
-    
+
   if (resources.length !== 0) {
     return res.send( {status: "Failed", description: "Username already in use."});
   }
@@ -83,12 +83,16 @@ app.post('/setup', async (req, res) => {
 
 // Initialise a group of schemas (protocol)
 app.post('/dwn/init', async (req, res) => {
-  const { protocol, definition } = req.body
+  // Use username to query the database and access keys / identifier
+  const { username, protocol, definition } = req.body;
 
-  const message = await dwn.createProtocol(protocol, definition, keys, identifier)
+
+
+  // TODO: Resolve this promise (ERROR / SUCCESS)
+  const message = await dwn.createProtocol(protocol, definition, keys, identifier);
   const result = await dwn.send(message);
-  res.send(result)
 
+  res.send(result)
 })
 
 app.post('/dwn/read', async (req, res) => {

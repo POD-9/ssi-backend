@@ -13,42 +13,42 @@
          },
          "delivery": {
             "schema": "pod9/delivery"
+         }
+      },
+      "records": {
+         "personal": {
+            "allow": {
+               "anyone": {
+                  "to": [
+                     "write"
+                  ]
+               }
+            }
          },
-         "records": {
-            "personal": {
-               "allow": {
-                  "anyone": {
-                     "to": [
-                        "write"
-                     ]
-                  }
+         "orderHistory": {
+            "allow": {
+               "anyone": {
+                  "to": [
+                     "write"
+                  ]
                }
-            },
-            "orderHistory": {
-               "allow": {
-                  "anyone": {
-                     "to": [
-                        "write"
-                     ]
-                  }
+            }
+         },
+         "payment": {
+            "allow": {
+               "anyone": {
+                  "to": [
+                     "write"
+                  ]
                }
-            },
-            "payment": {
-               "allow": {
-                  "anyone": {
-                     "to": [
-                        "write"
-                     ]
-                  }
-               }
-            },
-            "delivery": {
-               "allow": {
-                  "anyone": {
-                     "to": [
-                        "write"
-                     ]
-                  }
+            }
+         },
+         "delivery": {
+            "allow": {
+               "anyone": {
+                  "to": [
+                     "write"
+                  ]
                }
             }
          }
