@@ -141,27 +141,28 @@ app.post('/perms/reject', (req, res) => {
 
 //returns all permisions object
 app.post('/perms/read', async (req, res) => {
+   const { targetDID, status } = req.body
 
-   const targetDid = req.body.targetDID;
+   if (status != "all" && status != "rejected" && status != "granted" && status != "requested")
+      return res.json({ status: "Failed", description: "Invalid status" });
 
-   const msg = await dwn.createPermissionsRead(keys, targetDid);
+   const msg = await dwn.createPermissionsRead(keys, targetDID, status);
    const response = await dwn.send(msg);
 
    res.json(response);
 
 })
 
+/*
 //returns all rejected permissions
 app.post('/perms/read/reject', (req, res) => {
    res.send('Permissions rejected');
-
 })
-
 //returns all granted permissions
 app.post('/perms/read/grant', (req, res) => {
    res.send('Permissions granted');
-
 })
+*/
 
 // FOR THE FOLLOWING FUNCTIONALITY AROUND VCS, REFERENCE
 // https://github.com/spherity/aries-rfcs-veramo-plugin#sending-messages

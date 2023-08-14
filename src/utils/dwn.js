@@ -168,7 +168,7 @@ export class DwnHelper {
       const queryOptions = {
         ...query,
         target: targetDid,
-        status, //status can be 'all', 'rejected', 'granted', 'open' (haven't been processed yet)
+        status, //status can be 'all', 'rejected', 'granted', 'requested' (haven't been processed yet)
         signatureInput: signatureMaterial
       };
   
