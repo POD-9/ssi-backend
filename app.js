@@ -18,7 +18,7 @@ let identifier
 // const ariesPlugin = new AriesRFCsPlugin;
 
 app.get('/', (req, res) => {
-   res.send('Hello World!');
+   res.send('Hey dude');
 });
 
 // Register
@@ -40,10 +40,9 @@ app.post('/setup', async (req, res) => {
    if (!firstName || !lastName || !username || !password) 
       return res.send({ status: "Failed", description: "Missing form data" });
 
-   let resources = await getUser(username);
+   let user = await getUser(username);
 
-
-   if (resources.length !== 0)
+   if (user !== undefined)
       return res.send({ status: "Failed", description: "Username already in use." });
 
    let newUser = {
@@ -71,14 +70,13 @@ app.post('/dwn/init', async (req, res) => {
 
    // Get user
    const user = await getUser(username);
+   console.log("USER: ", user)
 
-   if (user.length === 0) 
+   if (user === undefined) 
       return res.json({status: "Failed", description: "Invalid username"});
 
-   const keys = user[0].keys;
-   const identifier = user[0].identifier.did;
-
-   console.log(`TargetDID: ${identifier}\n StructuredDidKey:  ${keys}`);
+   const keys = user.keys;
+   const identifier = user.identifier.did;
 
    // Resolve promise
    const message = await dwn.createProtocol(protocol, definition, keys, identifier);

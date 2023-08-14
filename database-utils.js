@@ -25,5 +25,5 @@ export async function getUser(username) {
       parameters: [{ name: "@username", value: username }]
    }).fetchAll();
 
-   return resources;
+   return resources[0];
 }
