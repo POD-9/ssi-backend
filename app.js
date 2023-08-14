@@ -113,18 +113,17 @@ app.post('/perms/request', async (req, res) => {
    const { method, schema, targetDID } = req.body;
 
    let dwnMethod;
-   if (method == "write") {
-      dwnMethod = RecordsWrite
-   } else if (method == "read") {
-      dwnMethod = RecordsQuery
-   } else {
-
-   }
+   if (method == 'write')
+      dwnMethod = "RecordsWrite";
+   else if (method == 'read')
+      dwnMethod = "RecordsQuery";
+   else
+      return res.send({status: "Failed", description: "Invalid DWN Method. Expected read or write."})
 
    const msg = await dwn.createPermissionsRequest(dwnMethod, schema, keys, targetDID);
    const response = await dwn.send(msg)
 
-   res.send(response);
+   res.json(response);
 })
 
 
@@ -141,8 +140,14 @@ app.post('/perms/reject', (req, res) => {
 })
 
 //returns all permisions object
-app.post('/perms/read', (req, res) => {
-   res.send('Read Permissions');
+app.post('/perms/read', async (req, res) => {
+
+   const targetDid = req.body.targetDID;
+
+   const msg = await dwn.createPermissionsRead(keys, targetDid);
+   const response = await dwn.send(msg);
+
+   res.json(response);
 
 })
 
@@ -157,7 +162,6 @@ app.post('/perms/read/grant', (req, res) => {
    res.send('Permissions granted');
 
 })
-
 
 // FOR THE FOLLOWING FUNCTIONALITY AROUND VCS, REFERENCE
 // https://github.com/spherity/aries-rfcs-veramo-plugin#sending-messages
