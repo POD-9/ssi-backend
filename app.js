@@ -121,23 +121,34 @@ app.post('/perms/request', async (req, res) => {
    res.send(response);
 })
 
+
+//takes a permission object and grants the permission
 app.post('/perms/grant', (req, res) => {
    res.send('Grant Permissions');
 
 })
 
+//takes a permission object and rejects the permission
+app.post('/perms/reject', (req, res) => {
+   res.send('Reject Permissions');
+
+})
+
+//returns all permisions object
 app.post('/perms/read', (req, res) => {
    res.send('Read Permissions');
 
 })
 
+//returns all rejected permissions
 app.post('/perms/read/reject', (req, res) => {
-   res.send('Permissions reject');
+   res.send('Permissions rejected');
 
 })
 
+//returns all granted permissions
 app.post('/perms/read/grant', (req, res) => {
-   res.send('Grant Read Permissions');
+   res.send('Permissions granted');
 
 })
 
