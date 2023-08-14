@@ -37,16 +37,14 @@ app.post('/setup', async (req, res) => {
    let username = req.body.username.toLowerCase().trim();
    let password = req.body.password.trim(); // Plaintext for the POC
 
-   if (!firstName || !lastName || !username || !password) {
+   if (!firstName || !lastName || !username || !password) 
       return res.send({ status: "Failed", description: "Missing form data" });
-   }
 
    let resources = await getUser(username);
 
 
-   if (resources.length !== 0) {
+   if (resources.length !== 0)
       return res.send({ status: "Failed", description: "Username already in use." });
-   }
 
    let newUser = {
       username: username,
@@ -71,9 +69,18 @@ app.post('/dwn/init', async (req, res) => {
    // Use username to query the database and access keys / identifier
    const { username, protocol, definition } = req.body;
 
+   // Get user
+   const user = await getUser(username);
 
+   if (user.length === 0) 
+      return res.json({status: "Failed", description: "Invalid username"});
 
-   // TODO: Resolve this promise (ERROR / SUCCESS)
+   const keys = user[0].keys;
+   const identifier = user[0].identifier.did;
+
+   console.log(`TargetDID: ${identifier}\n StructuredDidKey:  ${keys}`);
+
+   // Resolve promise
    const message = await dwn.createProtocol(protocol, definition, keys, identifier);
    const result = await dwn.send(message);
 
