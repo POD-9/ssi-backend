@@ -125,7 +125,10 @@ export class DwnHelper {
    * @returns {Promise<RecordsQuery>}
    */
   async createRecordsQuery(protocolName, protocolSchema, structuredDidKey, targetDid, additionalFilter={}) {
-    console.log(protocolName, protocolSchema, structuredDidKey, targetDid)
+    // Debugging
+    console.log(`Procol: ${protocolName}, Schema: ${protocolSchema},\n
+                 Keys: ${structuredDidKey},\n Target ${targetDid}`);
+
     const signatureMaterial = this.createSignatureInput(structuredDidKey)
     const query = {
       filter: {
@@ -342,8 +345,6 @@ export class DwnHelper {
     }
     
   }
-
-  
 
   decodeRecordsQueryEntries(result){
     result.entries.forEach(element => {

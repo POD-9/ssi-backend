@@ -112,7 +112,6 @@ export const initAgent = async (name) => {
         ],
     });
 
-    console.log('here4')
     const identifier = await agent.didManagerCreate({
         options: await createIdentifierOpts(),
     });
@@ -131,7 +130,7 @@ export const initAgent = async (name) => {
 
     // This is for debug purposes
     // console.log("FIND ME")
-    displayKeys(name);
+    // displayKeys(name);
 
     let key
     try{

@@ -3,6 +3,7 @@ import { DwnHelper } from './src/utils/dwn.js';
 import { initAgent } from './src/utils/agent.js';
 import cors from 'cors'
 import { getUser, connectToContainer } from './database-utils.js';
+import { RecordsQuery, RecordsWrite } from 'fork-of-dwn-sdk-js';
 
 const app = express();
 const port = 3000;
@@ -33,9 +34,9 @@ app.post('/setup', async (req, res) => {
 
    // Get the data from the request and build up the new user
    let firstName = req.body.firstName.trim();
-   let lastName = req.body.lastName.trim();
-   let username = req.body.username.toLowerCase().trim();
-   let password = req.body.password.trim(); // Plaintext for the POC
+   let lastName  = req.body.lastName.trim();
+   let username  = req.body.username.toLowerCase().trim();
+   let password  = req.body.password.trim(); // Plaintext for the POC
 
    if (!firstName || !lastName || !username || !password) 
       return res.send({ status: "Failed", description: "Missing form data" });
@@ -70,7 +71,6 @@ app.post('/dwn/init', async (req, res) => {
 
    // Get user
    const user = await getUser(username);
-   console.log("USER: ", user)
 
    if (user === undefined) 
       return res.json({status: "Failed", description: "Invalid username"});
@@ -85,24 +85,40 @@ app.post('/dwn/init', async (req, res) => {
    res.send(result)
 })
 
+// Reading from a particular schema
+// Make sure that keys exist
 app.post('/dwn/read', async (req, res) => {
    const { target_did, protocol, schema } = req.body
+ 
    let msg = await dwn.createRecordsQuery(protocol, schema, keys, target_did)
    let response = await dwn.send(msg)
    let data = dwn.decodeRecordsQueryData(response)
+
    res.send(data)
 })
 
+// Writing to a schema 
+// Make sure keys is not undefined
 app.post('/dwn/write', async (req, res) => {
    const { target_did, protocol, schema, data } = req.body
+
    const msg = await dwn.createRecordsWrite(protocol, schema, data, keys, target_did)
    const response = await dwn.send(msg);
+
    res.send(response)
 })
 
-app.post('/perms/request', (req, res) => {
-   res.send('Permissions requested');
+// Create a new permission request
+app.post('/perms/request', async (req, res) => {
+   const { method, schema, targetDID } = req.body;
 
+
+   let dwnMethod = method === "write" ? "RecordsWrite" : "RecordsQuery"
+
+   const msg = await dwn.createPermissionsRequest(dwnMethod, schema, keys, targetDID);
+   const response = await dwn.send(msg)
+
+   res.send(response);
 })
 
 app.post('/perms/grant', (req, res) => {
