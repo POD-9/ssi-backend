@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'pod9-wallet-backend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4A551D64E87944949823C3FB4B36F499 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9377840AE4254CB6B19B9CAB9E3285FE }}
           package: .
