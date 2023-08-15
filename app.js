@@ -61,7 +61,11 @@ app.post('/setup', async (req, res) => {
    await container.items.create(newUser)
 
    await dwn.init();
-   return res.send(newUser); // respond with the new user
+   res.json({ username:  newUser.username,
+              firstName: newUser.firstName,
+              lastName:  newUser.lastName,
+              did:       newUser.identifier.did
+            });
 });
 
 
@@ -83,7 +87,7 @@ app.post('/login', async (req, res) => {
    res.json({ username:  user.username,
               firstName: user.firstName,
               lastName:  user.lastName,
-              did: user.identifier.did
+              did:       user.identifier.did
             });
 });
 
