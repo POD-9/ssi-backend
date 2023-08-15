@@ -64,6 +64,30 @@ app.post('/setup', async (req, res) => {
    return res.send(newUser); // respond with the new user
 });
 
+
+// Login
+app.post('/login', async (req, res) => {
+   const { username, password } = req.body;
+
+   // Check username exists
+   const user = await getUser(username);
+
+   if (!user)
+      return res.json({status: "Failed", description: "Invalid username or password"});
+
+   keys = user.keys;
+
+   if (user.password !== password) 
+      return res.json({status: "Failed", description: "Invalid username or password"});
+
+   res.json({ username:  user.username,
+              firstName: user.firstName,
+              lastName:  user.lastName,
+              did: user.identifier.did
+            });
+});
+
+
 // Initialise a group of schemas (protocol)
 app.post('/dwn/init', async (req, res) => {
    // Use username to query the database and access keys / identifier
@@ -82,8 +106,9 @@ app.post('/dwn/init', async (req, res) => {
    const message = await dwn.createProtocol(protocol, definition, keys, identifier);
    const result = await dwn.send(message);
 
-   res.send(result)
+   res.send(result);
 })
+
 
 // Reading from a particular schema
 // Make sure that keys exist
@@ -97,6 +122,7 @@ app.post('/dwn/read', async (req, res) => {
    res.send(data)
 })
 
+
 // Writing to a schema 
 // Make sure keys is not undefined
 app.post('/dwn/write', async (req, res) => {
@@ -107,6 +133,7 @@ app.post('/dwn/write', async (req, res) => {
 
    res.send(response)
 })
+
 
 // Create a new permission request
 app.post('/perms/request', async (req, res) => {
@@ -137,6 +164,7 @@ app.post('/perms/grant', async (req, res) => {
    res.json(response);
 })
 
+
 //takes a permission object and rejects the permission
 app.post('/perms/reject', async (req, res) => {
    const { permissionRequest } = req.body;
@@ -146,6 +174,7 @@ app.post('/perms/reject', async (req, res) => {
 
    res.json(response);
 })
+
 
 //returns all permisions object
 app.post('/perms/read', async (req, res) => {
