@@ -106,21 +106,41 @@ app.post('/dwn/init', async (req, res) => {
    const message = await dwn.createProtocol(protocol, definition, keys, identifier);
    const result = await dwn.send(message);
 
-   res.send(result);
-})
+   res.json(result);
+});
 
 
 // Reading from a particular schema
 // Make sure that keys exist
 app.post('/dwn/read', async (req, res) => {
-   const { target_did, protocol, schema } = req.body
+   const { target_did, protocol, schema } = req.body;
  
-   let msg = await dwn.createRecordsQuery(protocol, schema, keys, target_did)
-   let response = await dwn.send(msg)
-   let data = dwn.decodeRecordsQueryData(response)
+   let msg = await dwn.createRecordsQuery(protocol, schema, keys, target_did);
+   let response = await dwn.send(msg);
+   let data = dwn.decodeRecordsQueryData(response);
 
-   res.send(data)
-})
+   res.json(data);
+});
+
+
+// Endpoint for returning all schemas
+app.post('/dwn/read/all', async (req, res) => {
+   const schemas = ['personal', 'orderHistory', 'payment', 'delivery'];
+   const { target_did, protocol } = req.body;
+
+   // Loop through schemas and read from each schema
+   let Data = {};
+   let msg, response, schemaData, schemaObj;
+   for (let schema of schemas) {
+      msg = await dwn.createRecordsQuery(protocol, protocol + '/' + schema, keys, target_did);
+      response = await dwn.send(msg);
+      schemaData = dwn.decodeRecordsQueryData(response);
+
+      Data[schema] = schemaData;
+   }
+
+   res.json({Data});
+});
 
 
 // Writing to a schema 

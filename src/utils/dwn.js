@@ -66,10 +66,11 @@ export class DwnHelper {
    * @param {object} message 
    */
   async send(message) {
-    console.log(this.host)
+    // console.log(this.host)
     // TODO: handle request failure
     if (this.host == undefined) throw new Error("Requires host")
-    console.log('sending dwn message to', this.host);
+    // console.log('sending dwn message to', this.host);
+
     // TODO: remove /dwn
     const response = await fetch(`${this.host}/dwn`, {
       method: 'POST',
@@ -126,8 +127,8 @@ export class DwnHelper {
    */
   async createRecordsQuery(protocolName, protocolSchema, structuredDidKey, targetDid, additionalFilter={}) {
     // Debugging
-    console.log(`Procol: ${protocolName}, Schema: ${protocolSchema},\n
-                 Keys: ${structuredDidKey},\n Target ${targetDid}`);
+    // console.log(`Procol: ${protocolName}, Schema: ${protocolSchema},\n
+    //             Keys: ${structuredDidKey},\n Target ${targetDid}`);
 
     const signatureMaterial = this.createSignatureInput(structuredDidKey)
     const query = {
@@ -185,7 +186,7 @@ export class DwnHelper {
    * @returns {Promise<RecordsWrite>}
    */
   async createRecordsWrite(protocolName, protocolSchema, data, structuredDidKey, targetDid) {
-    console.log(protocolName, protocolSchema, data, structuredDidKey, targetDid)
+    // console.log(protocolName, protocolSchema, data, structuredDidKey, targetDid)
     const signatureMaterial = this.createSignatureInput(structuredDidKey)
 
     const jsonStringified = JSON.stringify(data);
