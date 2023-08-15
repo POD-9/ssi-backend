@@ -128,15 +128,23 @@ app.post('/perms/request', async (req, res) => {
 
 
 //takes a permission object and grants the permission
-app.post('/perms/grant', (req, res) => {
-   res.send('Grant Permissions');
+app.post('/perms/grant', async (req, res) => {
+   const { permissionRequest } = req.body;
 
+   const msg = await dwn.processPermission(permissionRequest, keys, true);
+   const response = await dwn.send(msg);
+
+   res.json(response);
 })
 
 //takes a permission object and rejects the permission
-app.post('/perms/reject', (req, res) => {
-   res.send('Reject Permissions');
+app.post('/perms/reject', async (req, res) => {
+   const { permissionRequest } = req.body;
 
+   const msg = await dwn.processPermission(permissionRequest, keys, false);
+   const response = await dwn.send(msg);
+
+   res.json(response);
 })
 
 //returns all permisions object

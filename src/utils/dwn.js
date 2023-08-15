@@ -337,7 +337,6 @@ export class DwnHelper {
     * @returns {Promise<object>} PermissionsGrant
   */
   async processPermission(permissionsRequest, structuredDidKey, accept) {
-    console.log('this is me trying to process', permissionsRequest)
     if (accept){
       return await this.createPermissionsGrantFromMessage(permissionsRequest, structuredDidKey)
     }else{
