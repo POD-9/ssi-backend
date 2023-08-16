@@ -78,8 +78,7 @@ app.post('/login', async (req, res) => {
    res.json({ username:  user.username,
               firstName: user.firstName,
               lastName:  user.lastName,
-              did:       user.identifier.did
-            });
+              did:       user.identifier.did });
 });
 
 
@@ -89,7 +88,10 @@ app.post('/dwn/init', async (req, res) => {
    // Use username to query the database and access keys / identifier
    const { did, protocol, definition } = req.body;
 
-   // Get user
+   if (!did || !protocol || !definition)
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   // Get user's keys
    const keys = await getUserKeys(did);
 
    if (keys === undefined) 
@@ -97,7 +99,7 @@ app.post('/dwn/init', async (req, res) => {
 
    // Resolve promise
    const message = await dwn.createProtocol(protocol, definition, keys, did);
-   const result = await dwn.send(message);
+   const result  = await dwn.send(message);
 
    res.json(result);
 });
@@ -106,7 +108,16 @@ app.post('/dwn/init', async (req, res) => {
 // Reading from a particular schema
 // Make sure that keys exist
 app.post('/dwn/read', async (req, res) => {
-   const { target_did, protocol, schema } = req.body;
+   const { did, target_did, protocol, schema } = req.body;
+
+   if (!did || !target_did || !protocol || !schema) 
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   // Get user's keys
+   const keys = await getUserKeys(did);
+
+   if (keys === undefined) 
+      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
  
    let msg = await dwn.createRecordsQuery(protocol, schema, keys, target_did);
    let response = await dwn.send(msg);
@@ -119,7 +130,15 @@ app.post('/dwn/read', async (req, res) => {
 // Endpoint for returning all schemas
 app.post('/dwn/read/all', async (req, res) => {
    const schemas = ['personal', 'orderHistory', 'payment', 'delivery'];
-   const { target_did, protocol } = req.body;
+   const { did, target_did, protocol } = req.body;
+
+   if (!did || !target_did || !protocol )
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   // Get the keys of the user using the DID
+   const keys = await getUserKeys(did);
+   if (!keys) 
+      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
 
    // Loop through schemas and read from each schema
    let Data = {};
@@ -139,7 +158,16 @@ app.post('/dwn/read/all', async (req, res) => {
 // Writing to a schema 
 // Make sure keys is not undefined
 app.post('/dwn/write', async (req, res) => {
-   const { target_did, protocol, schema, data } = req.body
+   const { did, target_did, protocol, schema, data } = req.body
+
+   // Error checking
+   if (!did || !target_did || !protocol || !schema || !data)
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   // Get the keys of the user using the DID
+   const keys = await getUserKeys(did);
+   if (!keys) 
+      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
 
    const msg = await dwn.createRecordsWrite(protocol, schema, data, keys, target_did)
    const response = await dwn.send(msg);
