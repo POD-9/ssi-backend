@@ -134,7 +134,7 @@ app.post('/dwn/read/all', async (req, res) => {
 
    // Loop through schemas and read from each schema
    let Data = {};
-   let msg, response, schemaData, schemaObj;
+   let msg, response, schemaData;
    for (let schema of schemas) {
       msg = await dwn.createRecordsQuery(protocol, protocol + '/' + schema, keys, target_did);
       response = await dwn.send(msg);
@@ -143,7 +143,7 @@ app.post('/dwn/read/all', async (req, res) => {
       Data[schema] = schemaData;
    }
 
-   res.json({Data});
+   res.json(Data);
 });
 
 

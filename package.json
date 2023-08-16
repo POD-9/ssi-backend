@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "node apply-patches.js",
-    "start": "nodemon --no-experimental-fetch app.js"
+    "start": "node app.js",
+    "devStart": "nodemon --no-experimental-fetch app.js"
   },
   "keywords": [],
   "author": "",
