@@ -6,14 +6,14 @@ import { getUser, connectToContainer } from './database-utils.js';
 import { RecordsQuery, RecordsWrite } from 'fork-of-dwn-sdk-js';
 
 const app = express();
-const port = 3000;
+const port = 8080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); // Body parse middleware
 app.use(cors())
 
 const dwn = new DwnHelper(process.env.DWN_URL)
 let agent
-let keys
+let keys // structuredDIDKeys object
 let identifier
 
 // const ariesPlugin = new AriesRFCsPlugin;
@@ -101,7 +101,7 @@ app.post('/dwn/init', async (req, res) => {
    const user = await getUser(username);
 
    if (user === undefined) 
-      return res.json({status: "Failed", description: "Invalid username"});
+      return res.json({ status: "Failed", description: "Invalid username" });
 
    const keys = user.keys;
    const identifier = user.identifier.did;
