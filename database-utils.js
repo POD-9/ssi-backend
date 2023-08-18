@@ -39,5 +39,5 @@ export async function getUserKeys(did) {
       parameters: [{ name: "@did", value: did }]
    }).fetchAll();
 
-   return resources[0].keys;
+   return resources[0] ? resources[0].keys : undefined;
 }
