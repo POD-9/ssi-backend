@@ -178,7 +178,16 @@ app.post('/dwn/write', async (req, res) => {
 
 // Create a new permission request
 app.post('/perms/request', async (req, res) => {
-   const { method, schema, targetDID } = req.body;
+   const { did, method, schema, target_did } = req.body;
+
+   // Error checking
+   if (!did || !target_did || !method || !schema )
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   // Get the keys of the user using the DID
+   const keys = await getUserKeys(did);
+   if (!keys) 
+      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
 
    let dwnMethod;
    if (method == 'write')
@@ -188,7 +197,7 @@ app.post('/perms/request', async (req, res) => {
    else
       return res.send({status: "Failed", description: "Invalid DWN Method. Expected read or write."})
 
-   const msg = await dwn.createPermissionsRequest(dwnMethod, schema, keys, targetDID);
+   const msg = await dwn.createPermissionsRequest(dwnMethod, schema, keys, target_did);
    const response = await dwn.send(msg)
 
    res.json(response);
@@ -197,7 +206,16 @@ app.post('/perms/request', async (req, res) => {
 
 //takes a permission object and grants the permission
 app.post('/perms/grant', async (req, res) => {
-   const { permissionRequest } = req.body;
+   const { did, permissionRequest } = req.body;
+
+   if (!did || !permissionRequest) 
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   // Get the keys of the user using the DID
+   const keys = await getUserKeys(did);
+   if (!keys) 
+      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+
 
    const msg = await dwn.processPermission(permissionRequest, keys, true);
    const response = await dwn.send(msg);
@@ -208,7 +226,15 @@ app.post('/perms/grant', async (req, res) => {
 
 //takes a permission object and rejects the permission
 app.post('/perms/reject', async (req, res) => {
-   const { permissionRequest } = req.body;
+   const { did, permissionRequest } = req.body;
+
+   if (!did || !permissionRequest) 
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   // Get the keys of the user using the DID
+   const keys = await getUserKeys(did);
+   if (!keys) 
+      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
 
    const msg = await dwn.processPermission(permissionRequest, keys, false);
    const response = await dwn.send(msg);
@@ -219,25 +245,33 @@ app.post('/perms/reject', async (req, res) => {
 
 //returns all permisions object
 app.post('/perms/read', async (req, res) => {
-   const { targetDID, status } = req.body
+   const { did, target_did, status } = req.body
+
+   if (!did || !target_did || !status)
+      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+
+   const keys = await getUserKeys(did);
+   if (!keys)
+      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
 
    if (status != "all" && status != "rejected" && status != "granted" && status != "requested")
       return res.json({ status: "Failed", description: "Invalid status" });
 
-   const msg = await dwn.createPermissionsRead(keys, targetDID, status);
+   const msg = await dwn.createPermissionsRead(keys, target_did, status);
    const response = await dwn.send(msg);
 
    res.json(response);
 
-})
+});
 
 app.listen(port, () => {
    console.log(`Server running at http://localhost:${port}/`);
 });
 
+
+// **** VC STUFF ****
 // FOR THE FOLLOWING FUNCTIONALITY AROUND VCS, REFERENCE
 // https://github.com/spherity/aries-rfcs-veramo-plugin#sending-messages
-
 /*
 app.get('/vcs', (req, res) => {
    // read credential in the database
