@@ -22,7 +22,7 @@ export async function getUserByUsername(username) {
    let { resources } = await container.items
    .query({
       query: "SELECT * from container WHERE container.username = @username",
-      parameters: [{ name: "@username", value: name }]
+      parameters: [{ name: "@username", value: username }]
    }).fetchAll();
 
    return resources[0];
