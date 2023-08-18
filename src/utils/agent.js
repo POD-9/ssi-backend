@@ -27,7 +27,6 @@ dotenv.config();
 
 //20.4.240.15
 
-
 export const initAgent = async (name) => {
     const dbConnection = new DataSource({
         type: "sqlite",
@@ -87,7 +86,6 @@ export const initAgent = async (name) => {
         verificationMethods: [
             {
                 ...getKey(keys, "didcomm"),
-                // type: "Ed25519",
                 type: 'Ed25519',
                 purposes: [
                     IonPublicKeyPurpose.KeyAgreement,
@@ -128,10 +126,6 @@ export const initAgent = async (name) => {
         }
     }
 
-    // This is for debug purposes
-    // console.log("FIND ME")
-    // displayKeys(name);
-
     let key
     try{
         key = keys[2]
@@ -143,11 +137,9 @@ export const initAgent = async (name) => {
         }
     }
     
-    console.log(key)
     const { kid, type, privateKeyHex } = key;
 
     let pubKeyHex = privateKeyHex.slice(64,128)
-
 
     let decodedKeys = {
         did: identifier.did,
@@ -163,7 +155,10 @@ export const initAgent = async (name) => {
 };
 
 
+// Always return undefined (AKA always create a new file)
 const readKeysFromFile = (name) => {
+    return undefined;
+
     const filePath = `keys.csv.${name}`;
     if (!fs.existsSync(filePath)) {
         return undefined;
