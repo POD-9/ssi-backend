@@ -14,7 +14,7 @@ export async function connectToContainer() {
 }
 
 // Get user by username
-export async function getUser(username) {
+export async function getUserByUsername(username) {
 
    let container = await connectToContainer();
 
@@ -22,8 +22,22 @@ export async function getUser(username) {
    let { resources } = await container.items
    .query({
       query: "SELECT * from container WHERE container.username = @username",
-      parameters: [{ name: "@username", value: username }]
+      parameters: [{ name: "@username", value: name }]
    }).fetchAll();
 
    return resources[0];
+}
+
+// Get a user's keys from their DID
+export async function getUserKeys(did) {
+   let container = await connectToContainer();
+
+   // Query the database 
+   let { resources } = await container.items
+   .query({
+      query: "SELECT * from container WHERE container.identifier.did = @did",
+      parameters: [{ name: "@did", value: did }]
+   }).fetchAll();
+
+   return resources[0].keys;
 }
