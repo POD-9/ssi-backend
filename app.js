@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 app.post('/setup', async (req, res) => {
    // This is where we need to merge the sign up code. 
    // The keys variable holds the data that we need to use to sign/encrypt messages
-   const { identifier, keys, agent }  = await initAgent('test');
+   const { identifier, decodedKeys, agent }  = await initAgent('test');
 
    // Get the data from the request and build up the new user
    let firstName = req.body.firstName;
@@ -45,7 +45,7 @@ app.post('/setup', async (req, res) => {
       lastName: lastName,
       password: password,
       identifier: identifier,
-      keys: keys,
+      keys: decodedKeys,
       agent: agent
    }
 
@@ -251,14 +251,32 @@ app.post('/perms/read', async (req, res) => {
       return res.status(400).json({status: "Failed", description: "Missing data in request body."});
 
    const keys = await getUserKeys(did);
+   console.log("Keys", keys)
    if (!keys)
       return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+   
 
    if (status != "all" && status != "rejected" && status != "granted" && status != "requested")
       return res.json({ status: "Failed", description: "Invalid status" });
 
-   const msg = await dwn.createPermissionsRead(keys, target_did, status);
-   const response = await dwn.send(msg);
+
+   let msg, response
+   if (status == "all") {
+      // Split requests up into granted, rejected and open
+      response = {}
+
+      for (let _status of ["requested", "rejected", "granted"]) {
+         msg = await dwn.createPermissionsRead(keys, target_did, _status);
+
+         response[_status] = await dwn.send(msg);
+         delete response[_status].status
+      }
+      
+   } else {
+      msg = await dwn.createPermissionsRead(keys, target_did, status);
+      response = await dwn.send(msg);
+   }
+   
 
    res.json(response);
 
