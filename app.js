@@ -259,11 +259,11 @@ app.post('/perms/read', async (req, res) => {
    if (status != "all" && status != "rejected" && status != "granted" && status != "requested")
       return res.json({ status: "Failed", description: "Invalid status" });
 
-
    let msg, response
    if (status == "all") {
       // Split requests up into granted, rejected and open
-      response = {}
+      msg = await dwn.createPermissionsRead(keys, target_did, status)
+      response = await dwn.send(msg)
 
       for (let _status of ["requested", "rejected", "granted"]) {
          msg = await dwn.createPermissionsRead(keys, target_did, _status);
@@ -271,7 +271,16 @@ app.post('/perms/read', async (req, res) => {
          response[_status] = await dwn.send(msg);
          delete response[_status].status
       }
-      
+   } else if (status == "requested") {
+      msg = await dwn.createPermissionsRead(keys, target_did, "all");
+      const _response = await dwn.send(msg);
+
+      response = {entries: []}
+      for (let entry of _response.entries) {
+         if (entry.descriptor.method === "PermissionsRequest") {
+            response.entries.push(entry)
+         }
+      }
    } else {
       msg = await dwn.createPermissionsRead(keys, target_did, status);
       response = await dwn.send(msg);

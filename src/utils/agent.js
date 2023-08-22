@@ -157,8 +157,6 @@ export const initAgent = async (name) => {
 
 // Always return undefined (AKA always create a new file)
 const readKeysFromFile = (name) => {
-    return undefined;
-
     const filePath = `keys.csv.${name}`;
     if (!fs.existsSync(filePath)) {
         return undefined;
