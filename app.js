@@ -23,15 +23,15 @@ app.get('/', (req, res) => {
 app.post('/setup', async (req, res) => {
    // This is where we need to merge the sign up code. 
    // The keys variable holds the data that we need to use to sign/encrypt messages
-   const { identifier, decodedKeys, agent }  = await initAgent('test');
+   const { identifier, decodedKeys, agent } = await initAgent('test');
 
    // Get the data from the request and build up the new user
    let firstName = req.body.firstName;
-   let lastName  = req.body.lastName;
-   let username  = req.body.username;
-   let password  = req.body.password; // Plaintext for the POC
+   let lastName = req.body.lastName;
+   let username = req.body.username;
+   let password = req.body.password; // Plaintext for the POC
 
-   if (!firstName || !lastName || !username || !password) 
+   if (!firstName || !lastName || !username || !password)
       return res.send({ status: "Failed", description: "Missing form data" });
 
    let user = await getUserByUsername(username);
@@ -54,11 +54,12 @@ app.post('/setup', async (req, res) => {
    await container.items.create(newUser)
 
    await dwn.init();
-   res.json({ username:  newUser.username,
-              firstName: newUser.firstName,
-              lastName:  newUser.lastName,
-              did:       identifier.did
-            });
+   res.json({
+      username: newUser.username,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      did: identifier.did
+   });
 });
 
 
@@ -70,15 +71,17 @@ app.post('/login', async (req, res) => {
    const user = await getUserByUsername(username);
 
    if (!user)
-      return res.json({status: "Failed", description: "Invalid username or password"});
+      return res.json({ status: "Failed", description: "Invalid username or password" });
 
-   if (user.password !== password) 
-      return res.json({status: "Failed", description: "Invalid username or password"});
+   if (user.password !== password)
+      return res.json({ status: "Failed", description: "Invalid username or password" });
 
-   res.json({ username:  user.username,
-              firstName: user.firstName,
-              lastName:  user.lastName,
-              did:       user.identifier.did });
+   res.json({
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      did: user.identifier.did
+   });
 });
 
 
@@ -89,17 +92,17 @@ app.post('/dwn/init', async (req, res) => {
    const { did, protocol, definition } = req.body;
 
    if (!did || !protocol || !definition)
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    // Get user's keys
    const keys = await getUserKeys(did);
 
-   if (keys === undefined) 
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+   if (keys === undefined)
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
 
    // Resolve promise
    const message = await dwn.createProtocol(protocol, definition, keys, did);
-   const result  = await dwn.send(message);
+   const result = await dwn.send(message);
 
    res.json(result);
 });
@@ -110,15 +113,15 @@ app.post('/dwn/init', async (req, res) => {
 app.post('/dwn/read', async (req, res) => {
    const { did, target_did, protocol, schema } = req.body;
 
-   if (!did || !target_did || !protocol || !schema) 
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+   if (!did || !target_did || !protocol || !schema)
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    // Get user's keys
    const keys = await getUserKeys(did);
 
-   if (keys === undefined) 
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
- 
+   if (keys === undefined)
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
+
    let msg = await dwn.createRecordsQuery(protocol, schema, keys, target_did);
    let response = await dwn.send(msg);
    let data = dwn.decodeRecordsQueryData(response);
@@ -132,13 +135,13 @@ app.post('/dwn/read/all', async (req, res) => {
    const schemas = ['personal', 'orderHistory', 'payment', 'delivery'];
    const { did, target_did, protocol } = req.body;
 
-   if (!did || !target_did || !protocol )
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+   if (!did || !target_did || !protocol)
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    // Get the keys of the user using the DID
    const keys = await getUserKeys(did);
-   if (!keys) 
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+   if (!keys)
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
 
    // Loop through schemas and read from each schema
    let Data = {};
@@ -162,12 +165,12 @@ app.post('/dwn/write', async (req, res) => {
 
    // Error checking
    if (!did || !target_did || !protocol || !schema || !data)
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    // Get the keys of the user using the DID
    const keys = await getUserKeys(did);
-   if (!keys) 
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+   if (!keys)
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
 
    const msg = await dwn.createRecordsWrite(protocol, schema, data, keys, target_did)
    const response = await dwn.send(msg);
@@ -181,13 +184,13 @@ app.post('/perms/request', async (req, res) => {
    const { did, method, schema, target_did } = req.body;
 
    // Error checking
-   if (!did || !target_did || !method || !schema )
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+   if (!did || !target_did || !method || !schema)
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    // Get the keys of the user using the DID
    const keys = await getUserKeys(did);
-   if (!keys) 
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+   if (!keys)
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
 
    let dwnMethod;
    if (method == 'write')
@@ -195,7 +198,7 @@ app.post('/perms/request', async (req, res) => {
    else if (method == 'read')
       dwnMethod = "RecordsQuery";
    else
-      return res.send({status: "Failed", description: "Invalid DWN Method. Expected read or write."})
+      return res.send({ status: "Failed", description: "Invalid DWN Method. Expected read or write." })
 
    const msg = await dwn.createPermissionsRequest(dwnMethod, schema, keys, target_did);
    const response = await dwn.send(msg)
@@ -208,13 +211,13 @@ app.post('/perms/request', async (req, res) => {
 app.post('/perms/grant', async (req, res) => {
    const { did, permissionRequest } = req.body;
 
-   if (!did || !permissionRequest) 
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+   if (!did || !permissionRequest)
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    // Get the keys of the user using the DID
    const keys = await getUserKeys(did);
-   if (!keys) 
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+   if (!keys)
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
 
 
    const msg = await dwn.processPermission(permissionRequest, keys, true);
@@ -228,13 +231,13 @@ app.post('/perms/grant', async (req, res) => {
 app.post('/perms/reject', async (req, res) => {
    const { did, permissionRequest } = req.body;
 
-   if (!did || !permissionRequest) 
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+   if (!did || !permissionRequest)
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    // Get the keys of the user using the DID
    const keys = await getUserKeys(did);
-   if (!keys) 
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
+   if (!keys)
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
 
    const msg = await dwn.processPermission(permissionRequest, keys, false);
    const response = await dwn.send(msg);
@@ -248,13 +251,13 @@ app.post('/perms/read', async (req, res) => {
    const { did, target_did, status } = req.body
 
    if (!did || !target_did || !status)
-      return res.status(400).json({status: "Failed", description: "Missing data in request body."});
+      return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    const keys = await getUserKeys(did);
    console.log("Keys", keys)
    if (!keys)
-      return res.json({status: "Failed", description: "Unable to find user with matching DID"});
-   
+      return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
+
 
    if (status != "all" && status != "rejected" && status != "granted" && status != "requested")
       return res.json({ status: "Failed", description: "Invalid status" });
@@ -263,29 +266,26 @@ app.post('/perms/read', async (req, res) => {
    if (status == "all") {
       // Split requests up into granted, rejected and open
       msg = await dwn.createPermissionsRead(keys, target_did, status)
-      response = await dwn.send(msg)
+      response = await dwn.send(msg);
 
       for (let _status of ["requested", "rejected", "granted"]) {
          msg = await dwn.createPermissionsRead(keys, target_did, _status);
 
          response[_status] = await dwn.send(msg);
-         delete response[_status].status
+         delete response[_status].status;
       }
    } else if (status == "requested") {
+      // Only return unresolved requests
       msg = await dwn.createPermissionsRead(keys, target_did, "all");
-      const _response = await dwn.send(msg);
+      response = await dwn.send(msg);
 
-      response = {entries: []}
-      for (let entry of _response.entries) {
-         if (entry.descriptor.method === "PermissionsRequest") {
-            response.entries.push(entry)
-         }
-      }
+      response.entries = response.entries.filter(entry => entry.descriptor.method === "PermissionsRequest");
+
    } else {
       msg = await dwn.createPermissionsRead(keys, target_did, status);
       response = await dwn.send(msg);
    }
-   
+
 
    res.json(response);
 
