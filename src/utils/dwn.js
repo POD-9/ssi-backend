@@ -309,7 +309,7 @@ export class DwnHelper {
       signatureInput: signatureMaterial,
     }
   
-    console.log('opts ', opts)
+    // console.log('opts ', opts)
     const permissionsQuery = await PermissionsGrant.create(opts)
     return permissionsQuery.toJSON();
   }
@@ -324,7 +324,7 @@ export class DwnHelper {
       signatureInput: signatureMaterial,
     }
   
-    console.log('opts ', opts)
+    // console.log('opts ', opts)
     const permissionsQuery = await PermissionsReject.create(opts)
     return permissionsQuery.toJSON();
   }
