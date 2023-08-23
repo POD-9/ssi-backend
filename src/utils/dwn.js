@@ -347,6 +347,7 @@ export class DwnHelper {
   }
 
   decodeRecordsQueryEntries(result){
+
     result.entries.forEach(element => {
       let res = Encoder.base64UrlToObject(element.encodedData)
       element.data = res
@@ -356,6 +357,8 @@ export class DwnHelper {
   }
 
   decodeRecordsQueryData(result){
+    if (!result.entries) 
+      return []
     let res = []
     result.entries.forEach(element => {
       res.push(Encoder.base64UrlToObject(element.encodedData))

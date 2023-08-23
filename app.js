@@ -254,7 +254,6 @@ app.post('/perms/read', async (req, res) => {
       return res.status(400).json({ status: "Failed", description: "Missing data in request body." });
 
    const keys = await getUserKeys(did);
-   console.log("Keys", keys)
    if (!keys)
       return res.json({ status: "Failed", description: "Unable to find user with matching DID" });
 
