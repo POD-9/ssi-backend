@@ -28,6 +28,7 @@
     "@veramo/message-handler": "^5.4.1",
     "@veramo/remote-server": "^5.4.1",
     "cors": "^2.8.5",
+    "hash-wasm": "^4.9.0",
     "fork-of-dwn-sdk-js": "^0.1.11",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.0.1",
